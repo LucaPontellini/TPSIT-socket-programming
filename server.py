@@ -1,27 +1,46 @@
 import socket
 
-# Configurazione del server
-HOST = "127.0.0.1" # Indirizzo locale (solo il mio PC può collegarsi al server)
-PORT = 5000 # Porta su cui il server rimane in ascolto
+class ServerTCP:
+    def __init__(self):
+        self.host = "127.0.0.1"
+        self.porta = 6789
 
-# Creazione della socket
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    # AF_INET --> IPv4
-    # SOCK_STREAM --> TCP (connessione affidabile)
-    
-    s.bind((HOST, PORT))  # Collega la socket all'indirizzo ed alla porta
-    s.listen() # Mette il server in ascolto
-    print("Server in ascolto su", HOST, "porta", PORT)
+    def avvia(self):
+        print("SERVER: avvio...")
 
-    conn, addr = s.accept() # Attesa di una connessione
+        # creazione della socket
+        self.socket_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    # Gestione della connessione con il client
-    with conn:
-        print("Connesso da", addr)
+        # associazione dell'indirizzo e della porta
+        self.socket_server.bind((self.host, self.porta))
 
-        # Ricezione del messaggio
-        data = conn.recv(1024)  # Riceve fino a 1024 byte
-        print("Messaggio ricevuto:", data.decode())  # Decodifica i byte in stringa
+        # mettere il server in ascolto
+        self.socket_server.listen()
+        print("SERVER: in ascolto su", self.host, "porta", self.porta)
 
-        # Risposta al client
-        conn.sendall(b"Ciao client, ho ricevuto il tuo messaggio!")
+        # attendere un client
+        connessione, indirizzo_client = self.socket_server.accept()
+        print("SERVER: connesso con", indirizzo_client)
+
+        # ricezione dei dati dal client
+        dati_ricevuti = connessione.recv(1024)
+        messaggio = dati_ricevuti.decode()
+        print("SERVER: messaggio ricevuto:", messaggio)
+
+        # preparazione della risposta
+        risposta = "Ciao client, ho ricevuto il tuo messaggio!"
+        risposta_bytes = risposta.encode()
+
+        # invio della risposta
+        connessione.sendall(risposta_bytes)
+
+        # chiusura della connessione
+        print("SERVER: chiudo la connessione")
+        connessione.close()
+
+        # chiusura del server
+        self.socket_server.close()
+
+if __name__ == "__main__":
+    server = ServerTCP()
+    server.avvia()

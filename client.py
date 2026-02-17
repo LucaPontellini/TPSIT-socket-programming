@@ -1,17 +1,49 @@
 import socket
 
-# Configurazione del client
-HOST = "127.0.0.1"  # Indirizzo del server (localhost)
-PORT = 5000 # Porta su cui il server sta ascoltando
+class ClientTCP:
+    def __init__(self):
+        self.nome_server = "localhost"
+        self.porta_server = 6789
 
-# Creazione della socket
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    # AF_INET --> IPv4
-    # SOCK_STREAM --> TCP (connessione affidabile)
+    def connetti(self):
+        print("CLIENT: avvio della connessione...")
 
-    s.connect((HOST, PORT))  # Connessione al server
-    s.sendall(b"Ciao server!")  # Invio del messaggio al server
+        # creazione della socket
+        self.socket_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    data = s.recv(1024)  # Attesa della risposta del server
+        # collegamento al server
+        self.socket_client.connect((self.nome_server, self.porta_server))
 
-print("Risposta dal server:", data.decode()) # Visualizzazione della risposta
+        print("CLIENT: connessione della stabilità con il server")
+
+    def comunica(self):
+        print("Inserisci la stringa da inviare al server:")
+
+        # inserimento della stringa
+        messaggio = input(str())
+
+        # trasformazione della stringa in byte (passaggio obbligatorio per la socket)
+        messaggio_bytes = messaggio.encode()
+
+        # invio dei byte al server
+        self.socket_client.sendall(messaggio_bytes)
+
+        print("CLIENT: attendo la risposta...")
+
+        # ricezione fino a 1024 byte dal server
+        dati_ricevuti = self.socket_client.recv(1024)
+
+        # trasformazione dei byte ricevuti in una stringa
+        risposta = dati_ricevuti.decode()
+
+        # visualizzazione della risposta
+        print(f"Risposta dal server: {risposta}")
+
+        # chiusura della connessione
+        print("CLIENT: chiudo la connessione")
+        self.socket_client.close()
+
+if __name__ == "__main__":
+    client = ClientTCP()
+    client.connetti()
+    client.comunica()
