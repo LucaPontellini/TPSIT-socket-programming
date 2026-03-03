@@ -17,10 +17,9 @@ class ClientTCP:
         print("CLIENT: connessione della stabilità con il server")
 
     def comunica(self):
-        print("Inserisci la stringa da inviare al server:")
-
+        
         # inserimento della stringa
-        messaggio = input(str())
+        messaggio = input("Inserisci la stringa da inviare al server: ")
 
         # trasformazione della stringa in byte (passaggio obbligatorio per la socket)
         messaggio_bytes = messaggio.encode()
